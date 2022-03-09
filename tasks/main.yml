@@ -17,11 +17,11 @@
     state: present
 
 - name: Install GitLab dependencies (Debian).
-  include_tasks: debian.yml
+  import_tasks: debian.yml
   when: ansible_distribution == 'Debian'
 
 - name: Install GitLab dependencies (Ubuntu).
-  include_tasks: ubuntu.yml
+  import_tasks: ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
 
 - name: Download GitLab repository installation script.
