@@ -17,10 +17,12 @@
     state: present
 
 - name: Install GitLab dependencies (Debian).
-  apt:
-    name: gnupg2
-    state: present
-  when: ansible_os_family == 'Debian'
+  include_tasks: debian.yml
+  when: ansible_distribution == 'Debian'
+
+- name: Install GitLab dependencies (Ubuntu).
+  include_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Download GitLab repository installation script.
   get_url:

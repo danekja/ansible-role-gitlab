@@ -1,0 +1,11 @@
+- name: Install GitLab dependencies (before Ubuntu 20.04).
+  apt:
+    name: gnupg2
+    state: present
+  when: ansible_distribution_version is version('20.04', '<')
+
+- name: Install GitLab dependencies (Ubuntu 20.04 and higher).
+  apt:
+    name: gnupg
+    state: present
+  when: ansible_distribution_version is version('20.04', '>=')

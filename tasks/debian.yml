@@ -1,0 +1,11 @@
+- name: Install GitLab dependencies (before Debian 10).
+  apt:
+    name: gnupg2
+    state: present
+  when: ansible_distribution_version is version('10', '<')
+
+- name: Install GitLab dependencies (Debian 10 and higher).
+  apt:
+    name: gnupg
+    state: present
+  when: ansible_distribution_version is version('10', '>=')
