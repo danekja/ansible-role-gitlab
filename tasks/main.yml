@@ -41,21 +41,27 @@
     gitlab_package_name: "{{ gitlab_edition }}{{ gitlab_package_version_separator }}{{ gitlab_version }}"
   when: gitlab_version | default(false)
 
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Check whether GitLab is installed
+  set_fact:
+    installed_gitlabs: "{{ ansible_facts.packages[gitlab_edition] | default([]) }}"
+
+- name: Check whether GitLab needs updates
+  set_fact:
+    needs_updates: "{{ installed_gitlabs[0].version is version(gitlab_version, '<') }}"
+  when: gitlab_version | default(false) and installed_gitlabs | length > 0
+
 - name: Install GitLab
   package:
     name: "{{ gitlab_package_name | default(gitlab_edition) }}"
     state: present
   async: 300
   poll: 5
-  when: not gitlab_file.stat.exists
-
-# Start and configure GitLab. Sometimes the first run fails, but after that,
-# restarts fix problems, so ignore failures on this run.
-- name: Reconfigure GitLab (first run).
-  command: >
-    gitlab-ctl reconfigure
-    creates=/var/opt/gitlab/bootstrapped
-  failed_when: false
+  notify: restart gitlab
+  when: installed_gitlabs | length == 0 or needs_updates | default(false)
 
 - name: Create GitLab SSL configuration folder.
   file:
