@@ -58,7 +58,7 @@
   package:
     name: "{{ gitlab_package_name | default(gitlab_edition) }}"
     state: present
-  async: 300
+  async: 600
   poll: 5
   notify: restart gitlab
   when: installed_gitlabs | length == 0 or needs_updates | default(false)
